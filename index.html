@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#140a2a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Diário das Emoções</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --ease: cubic-bezier(.32,.72,0,1);
+  --spring: cubic-bezier(.34,1.56,.64,1);
+  --blue:#3b82f6; --yellow:#facc15; --red:#ef4444;
+  --txt:#fff; --txt2:rgba(255,255,255,.68); --txt3:rgba(255,255,255,.45);
+  --glass:rgba(255,255,255,.13);
+  --glass-strong:rgba(255,255,255,.2);
+  --stroke:rgba(255,255,255,.28);
+  --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#140a2a;color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit;border:0;outline:0;background:none}
+button{cursor:pointer}
+
+/* ===== fundo vivo ===== */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:linear-gradient(160deg,#1b0b3a,#0e1033 55%,#2a0d33)}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.75;will-change:transform}
+.b1{width:60vmax;height:60vmax;left:-20vmax;top:-18vmax;background:#7c3aed;animation:drift1 18s ease-in-out infinite alternate}
+.b2{width:55vmax;height:55vmax;right:-22vmax;top:20vh;background:#ec4899;animation:drift2 22s ease-in-out infinite alternate}
+.b3{width:50vmax;height:50vmax;left:-10vmax;bottom:-20vmax;background:#2563eb;animation:drift3 20s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(18vmax,12vmax) scale(1.15)}}
+@keyframes drift2{to{transform:translate(-16vmax,-10vmax) scale(.9)}}
+@keyframes drift3{to{transform:translate(14vmax,-14vmax) scale(1.2)}}
+
+/* ===== vidro ===== */
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.07));
+  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
+  border:1px solid var(--stroke);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.28);
+  border-radius:26px;
+}
+
+/* ===== splash ===== */
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 45%,#3a1160,#140a2a 70%);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease)}
+#splash.out{opacity:0;transform:scale(1.35);filter:blur(14px);pointer-events:none}
+.fh{position:absolute;bottom:-60px;opacity:0;animation:rise linear forwards;will-change:transform}
+@keyframes rise{0%{transform:translateY(0) translateX(0) rotate(0) scale(.6);opacity:0}
+  10%{opacity:.9}90%{opacity:.7}100%{transform:translateY(-115vh) translateX(var(--dx)) rotate(var(--rot)) scale(1.1);opacity:0}}
+.hero{position:relative;width:150px;height:150px;display:grid;place-items:center;margin-bottom:26px}
+.hero svg{width:130px;height:130px;filter:drop-shadow(0 0 28px rgba(255,64,129,.9));animation:enter 1.2s var(--spring) both,beat 1.3s ease-in-out 1.2s infinite}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,120,170,.6);animation:ring 2.4s ease-out infinite}
+.ring.r2{animation-delay:1.2s}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+@keyframes enter{0%{transform:scale(0) rotate(-25deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.14)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
+.stitle{font-size:34px;font-weight:800;letter-spacing:-.5px;text-align:center;line-height:1.1;padding:0 24px}
+.stitle span{display:inline-block;opacity:0;transform:translateY(22px) scale(.8);filter:blur(8px);animation:letter .7s var(--spring) forwards}
+@keyframes letter{to{opacity:1;transform:none;filter:none}}
+.ssub{margin-top:14px;font-size:14px;color:var(--txt2);opacity:0;animation:fade 1s ease 2.1s forwards;text-align:center}
+.ssub b{color:#ffb3cf;font-weight:600}
+.skip{position:absolute;bottom:calc(30px + var(--sab));font-size:12px;color:var(--txt3);opacity:0;animation:fade 1s ease 1.5s forwards}
+@keyframes fade{to{opacity:1}}
+
+/* ===== telas ===== */
+.screen{position:fixed;inset:0;z-index:2;display:none}
+.screen.show{display:flex}
+#setup{align-items:center;justify-content:center;padding:24px}
+.setup-card{width:100%;max-width:420px;padding:28px 24px;animation:pop .7s var(--spring) both}
+@keyframes pop{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
+.setup-card h2{font-size:26px;margin-bottom:6px;letter-spacing:-.4px}
+.setup-card p{color:var(--txt2);font-size:14px;line-height:1.45;margin-bottom:18px}
+.field{display:block;margin-bottom:14px}
+.field span{display:block;font-size:12px;color:var(--txt2);margin:0 0 6px 4px;text-transform:uppercase;letter-spacing:.6px}
+.input{width:100%;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid var(--stroke);transition:.25s var(--ease)}
+.input:focus{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.6);transform:scale(1.01)}
+.input::placeholder{color:var(--txt3)}
+.btn{width:100%;padding:15px;border-radius:18px;font-weight:700;font-size:16px;
+  background:linear-gradient(135deg,#ff4d8d,#8b5cf6);box-shadow:0 8px 24px rgba(236,72,153,.4),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .35s var(--spring),opacity .2s,filter .2s}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.4;filter:grayscale(.6)}
+.hint{font-size:12px;color:var(--txt3);margin-top:12px;line-height:1.4}
+
+#app{flex-direction:column}
+header{padding:calc(14px + var(--sat)) 18px 8px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:24px;letter-spacing:-.5px;font-weight:800}
+header small{display:block;color:var(--txt2);font-size:12px;margin-top:2px}
+.iconbtn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:18px;transition:transform .3s var(--spring)}
+.iconbtn:active{transform:scale(.85)}
+
+main{flex:1;position:relative;overflow:hidden}
+.panel{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:6px 16px calc(110px + var(--sab));
+  opacity:0;transform:translateX(40px) scale(.98);pointer-events:none;transition:opacity .45s var(--ease),transform .5s var(--ease);
+  -webkit-overflow-scrolling:touch}
+.panel.active{opacity:1;transform:none;pointer-events:auto}
+.panel.left{transform:translateX(-40px) scale(.98)}
+
+/* barra inferior */
+nav{position:fixed;left:50%;bottom:calc(14px + var(--sab));transform:translateX(-50%);z-index:10;width:min(92vw,420px);height:66px;
+  display:grid;grid-template-columns:repeat(3,1fr);padding:6px;border-radius:34px}
+nav .ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/3);border-radius:28px;
+  background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.14));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 4px 14px rgba(0,0,0,.2);
+  transition:transform .55s var(--spring)}
+nav button{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:var(--txt2);font-weight:600;transition:color .3s,transform .3s var(--spring)}
+nav button .e{font-size:22px;transition:transform .4s var(--spring)}
+nav button.on{color:#fff}
+nav button.on .e{transform:scale(1.2) translateY(-1px)}
+nav button:active{transform:scale(.9)}
+
+/* status do casal */
+.status{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 14px}
+.scard{padding:14px;position:relative;overflow:hidden;transition:box-shadow .6s,border-color .6s}
+.scard::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 0%,var(--c,transparent),transparent 65%);opacity:.55;transition:.6s}
+.scard>*{position:relative}
+.scard .who{font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c,#888);box-shadow:0 0 12px var(--c,transparent)}
+.scard .feel{font-size:19px;font-weight:700;margin-top:8px;letter-spacing:-.3px}
+.scard .when{font-size:11px;color:var(--txt3);margin-top:4px}
+.scard.empty{opacity:.7}
+
+/* compositor */
+.composer{padding:16px;margin-bottom:16px}
+.composer h3{font-size:15px;margin-bottom:12px;color:var(--txt2);font-weight:600}
+.orbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.orb{aspect-ratio:1/.95;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:rgba(255,255,255,.1);border:1px solid var(--stroke);font-size:12px;font-weight:600;color:var(--txt2);
+  transition:transform .45s var(--spring),background .3s,box-shadow .4s,color .3s}
+.orb .em{font-size:30px;transition:transform .5s var(--spring)}
+.orb:active{transform:scale(.92)}
+.orb.sel{color:#fff;transform:scale(1.07);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 85%,#fff 0%),color-mix(in srgb,var(--c) 45%,#000 0%));
+  box-shadow:0 0 0 2px rgba(255,255,255,.5),0 10px 28px color-mix(in srgb,var(--c) 70%,transparent)}
+.orb.sel .em{transform:scale(1.25) rotate(-6deg)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;max-height:0;opacity:0;overflow:hidden;transition:max-height .6s var(--ease),opacity .4s,margin .4s}
+.chips.open{max-height:200px;opacity:1}
+.chip{padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;background:rgba(255,255,255,.12);border:1px solid var(--stroke);
+  transition:transform .35s var(--spring),background .25s}
+.chip:active{transform:scale(.92)}
+.chip.sel{background:rgba(255,255,255,.9);color:#1b0b3a;transform:scale(1.06)}
+textarea.input{margin-top:14px;min-height:84px;resize:none;display:block}
+.composer .btn{margin-top:12px}
+
+/* feed */
+.sect{font-size:13px;color:var(--txt2);margin:4px 4px 10px;font-weight:600;display:flex;align-items:center;gap:8px}
+.live{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7dffb0;font-weight:700}
+.live i{width:7px;height:7px;border-radius:50%;background:#34d399;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25;transform:scale(.7)}}
+.entry{padding:14px 16px;margin-bottom:12px;border-left:5px solid var(--c);position:relative;animation:enterIn .7s var(--spring) both}
+.entry.me{margin-left:26px}
+.entry.other{margin-right:26px}
+@keyframes enterIn{from{opacity:0;transform:translateY(24px) scale(.92);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.entry .top{display:flex;align-items:center;gap:8px;font-size:13px}
+.entry .name{font-weight:700}
+.entry .badge{padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;background:color-mix(in srgb,var(--c) 35%,transparent);border:1px solid color-mix(in srgb,var(--c) 70%,transparent)}
+.entry .time{margin-left:auto;font-size:11px;color:var(--txt3)}
+.entry p{margin-top:8px;font-size:15px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.entry .del{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--txt3);padding:4px 8px}
+.emptymsg{text-align:center;color:var(--txt3);padding:30px 10px;font-size:14px;line-height:1.5}
+
+/* dicas e presentes */
+.tipnow{padding:18px;margin:8px 0 16px;position:relative;overflow:hidden}
+.tipnow::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,var(--c,#ec4899),transparent 70%);opacity:.5}
+.tipnow>*{position:relative}
+.tipnow .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);font-weight:700}
+.tipnow h3{font-size:18px;margin:6px 0;letter-spacing:-.3px}
+.tipnow p{font-size:14px;line-height:1.5;color:rgba(255,255,255,.88)}
+.tip{padding:16px;margin-bottom:12px;display:flex;gap:14px;animation:enterIn .6s var(--spring) both}
+.tip .ic{font-size:28px;flex:none;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.14)}
+.tip h4{font-size:15px;margin-bottom:4px}
+.tip p{font-size:13.5px;line-height:1.5;color:var(--txt2)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters .chip{flex:none}
+.gift{padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;animation:enterIn .6s var(--spring) both}
+.gift .ic{font-size:30px;flex:none;width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.14)}
+.gift h4{font-size:15px}
+.gift p{font-size:13px;color:var(--txt2);margin-top:2px;line-height:1.4}
+.gift .pr{font-size:12px;color:#ffb3cf;margin-top:4px;font-weight:600}
+
+/* toast */
+#toast{position:fixed;top:calc(12px + var(--sat));left:50%;z-index:200;transform:translate(-50%,-140%);padding:12px 18px;border-radius:22px;
+  max-width:90vw;font-size:14px;font-weight:600;transition:transform .6s var(--spring)}
+#toast.show{transform:translate(-50%,0)}
+.banner{margin:6px 0 12px;padding:12px 14px;border-radius:18px;font-size:12.5px;line-height:1.45;background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.5);color:#fde68a}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<!-- ENTRADA ANIMADA -->
+<div id="splash">
+  <div class="hero">
+    <div class="ring"></div><div class="ring r2"></div>
+    <svg viewBox="0 0 32 29"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6aa2"/><stop offset="1" stop-color="#ff2d6f"/></linearGradient></defs>
+      <path fill="url(#hg)" d="M23.6 0c-3.4 0-5.6 1.8-7.6 4.4C14 1.8 11.8 0 8.4 0 3.8 0 0 3.6 0 8.5c0 7.3 9.2 14 14.8 19.7.5.5 1.9.5 2.4 0C22.8 22.5 32 15.8 32 8.5 32 3.6 28.2 0 23.6 0z"/></svg>
+  </div>
+  <div class="stitle" id="stitle"></div>
+  <div class="ssub">desenvolvido por <b>Luiz Carletti</b></div>
+  <div class="skip">toque para entrar</div>
+</div>
+
+<!-- CONFIGURAÇÃO -->
+<section class="screen" id="setup">
+  <div class="setup-card glass">
+    <h2>Bem-vindo(a) 💞</h2>
+    <p>Escolha seu nome e um <b>código do casal</b>. Vocês dois usam o <b>mesmo código</b> para ver o diário um do outro ao vivo.</p>
+    <label class="field"><span>Seu nome</span><input class="input" id="inName" maxlength="20" placeholder="Ex.: Luiz" autocomplete="off"></label>
+    <label class="field"><span>Código do casal</span><input class="input" id="inRoom" maxlength="30" placeholder="Ex.: nosso-amor-2026" autocomplete="off" autocapitalize="none"></label>
+    <button class="btn" id="btnStart" disabled>Entrar</button>
+    <p class="hint">Escolha um código difícil de adivinhar: ele é a "chave" do diário de vocês. Mínimo de 6 caracteres.</p>
+  </div>
+</section>
+
+<!-- APP -->
+<section class="screen" id="app">
+  <header>
+    <div><h1>Diário das Emoções</h1><small id="sub"></small></div>
+    <button class="iconbtn glass" id="btnCfg" aria-label="Configurações">⚙️</button>
+  </header>
+  <main>
+    <div class="panel active" id="p0">
+      <div id="demoBanner" class="banner" style="display:none">Modo demonstração: as mensagens ficam só neste aparelho. Siga o README para ligar o Firebase e sincronizar com sua parceira.</div>
+      <div class="status" id="status"></div>
+      <div class="composer glass">
+        <h3>Como você está se sentindo?</h3>
+        <div class="orbs" id="orbs"></div>
+        <div class="chips" id="chips"></div>
+        <textarea class="input" id="txt" maxlength="500" placeholder="Escreva o que aconteceu, o que você precisa…"></textarea>
+        <button class="btn" id="btnSave" disabled>Salvar e compartilhar</button>
+      </div>
+      <div class="sect">Diário de vocês <span class="live"><i></i>ao vivo</span></div>
+      <div id="feed"></div>
+    </div>
+    <div class="panel" id="p1">
+      <div class="tipnow glass" id="tipnow"></div>
+      <div class="sect">Dicas para fortalecer o relacionamento</div>
+      <div id="tips"></div>
+    </div>
+    <div class="panel" id="p2">
+      <div class="sect" style="margin-top:8px">Ideias de presentes</div>
+      <div class="filters" id="gfilters"></div>
+      <div id="gifts"></div>
+    </div>
+  </main>
+  <nav class="glass" id="nav">
+    <div class="ind" id="ind"></div>
+    <button class="on" data-t="0"><span class="e">📖</span>Diário</button>
+    <button data-t="1"><span class="e">💡</span>Dicas</button>
+    <button data-t="2"><span class="e">🎁</span>Presentes</button>
+  </nav>
+</section>
+
+<div id="toast" class="glass"></div>
+
+<script type="module">
+import { firebaseConfig } from "./firebase-config.js";
+
+const $ = s => document.querySelector(s);
+const store = {
+  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+};
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- dados fixos ---------- */
+const MOODS = {
+  blue:   { label:'Bem',            em:'😊', color:'#3b82f6', feelings:['Feliz','Apaixonado(a)','Grato(a)','Tranquilo(a)','Animado(a)','Carinhoso(a)'] },
+  yellow: { label:'Mais ou menos',  em:'😐', color:'#facc15', feelings:['Cansado(a)','Ansioso(a)','Entediado(a)','Carente','Pensativo(a)','Preocupado(a)'] },
+  red:    { label:'Irritado(a)',    em:'😡', color:'#ef4444', feelings:['Irritado(a)','Triste','Magoado(a)','Estressado(a)','Com ciúmes','Aconteceu algo'] }
+};
+
+const TIPS_MOOD = {
+  blue:   { t:'Aproveite a onda boa 💙', p:'Quando o humor está bom, é a hora de agradecer. Mande uma mensagem dizendo uma coisa específica que você ama nela(e) hoje.' },
+  yellow: { t:'Um dia meio cinza 💛', p:'Pergunte "quer conversar ou prefere só companhia?". Muitas vezes a pessoa só precisa saber que não está sozinha, sem precisar resolver nada.' },
+  red:    { t:'Hora de ter calma ❤️', p:'Não discuta no calor do momento. Ouça sem interromper, valide o que sentiu ("faz sentido você se sentir assim") e só depois fale do seu lado. Um abraço sem pressa ajuda muito.' }
+};
+const TIPS = [
+  {i:'👂',t:'Escuta de verdade',p:'Largue o celular, olhe nos olhos e ouça até o fim. Tente repetir com suas palavras o que entendeu antes de responder.'},
+  {i:'🗣️',t:'Fale "eu me sinto…"',p:'Em vez de "você sempre faz isso", diga "eu me senti ignorado(a) quando…". Isso evita defesa e abre conversa.'},
+  {i:'⏸️',t:'Combine uma pausa',p:'Se a conversa esquentar, peçam 20 minutos de pausa e voltem depois. Pausa não é fugir, é cuidar.'},
+  {i:'💌',t:'Pequenos gestos todo dia',p:'Um bom dia carinhoso, um "cheguei bem", um bilhete. O que mantém o amor vivo é a constância, não só as grandes surpresas.'},
+  {i:'🙏',t:'Agradeça em voz alta',p:'Todo dia, diga uma coisa pela qual você é grato(a) ao outro. Parece simples, mas muda o clima da relação.'},
+  {i:'📅',t:'Encontro semanal',p:'Reservem um momento por semana só para vocês, sem tela e sem tarefas. Pode ser um café ou uma caminhada.'},
+  {i:'🤝',t:'Peçam desculpas direito',p:'Um bom pedido de desculpas tem 3 partes: o que eu fiz, como isso te afetou e o que vou fazer diferente.'},
+  {i:'🌱',t:'Respeitem o tempo de cada um',p:'Cada pessoa processa emoções num ritmo. Perguntar "do que você precisa agora?" vale mais do que adivinhar.'},
+  {i:'😂',t:'Rir juntos',p:'Lembrem de piadas internas, vejam algo engraçado juntos. O humor é um dos melhores protetores do casal.'},
+  {i:'🎯',t:'Sonhos em comum',p:'Conversem sobre planos para os próximos meses e anos. Ter um objetivo juntos aproxima.'},
+  {i:'🫶',t:'Toque e carinho',p:'Abraço longo (20 segundos) ajuda a reduzir o estresse. Sem motivo, só porque sim.'},
+  {i:'📝',t:'Use este diário com honestidade',p:'Registrar o que sente antes de explodir ajuda o outro a entender você, e você a entender a si mesmo(a).'}
+];
+const GCATS = ['Todos','Até R$ 50','Românticos','Experiências','Mimos'];
+const GIFTS = [
+  {i:'💐',n:'Flores do dia a dia',d:'Um buquê simples, sem data especial, vale mais pela surpresa.',p:'R$ 30–80',c:'Até R$ 50'},
+  {i:'🍫',n:'Caixa de chocolates favoritos',d:'Descubra o preferido dela(e) e monte uma caixinha personalizada.',p:'R$ 25–60',c:'Até R$ 50'},
+  {i:'💌',n:'Carta escrita à mão',d:'Conte 5 motivos pelos quais você a(o) ama. Barato e inesquecível.',p:'R$ 0–10',c:'Até R$ 50'},
+  {i:'📸',n:'Mini álbum de fotos',d:'Imprima fotos de vocês e monte um mural ou álbum pequeno.',p:'R$ 30–50',c:'Até R$ 50'},
+  {i:'☕',n:'Caneca personalizada',d:'Com uma foto ou frase só de vocês.',p:'R$ 30–50',c:'Até R$ 50'},
+  {i:'🎶',n:'Playlist do casal',d:'Monte uma playlist com as músicas da história de vocês e mande com um bilhete.',p:'Grátis',c:'Até R$ 50'},
+  {i:'💍',n:'Joia delicada',d:'Colar ou pulseira discretos, com pingente de inicial ou data.',p:'R$ 150–500',c:'Românticos'},
+  {i:'🕯️',n:'Jantar à luz de velas em casa',d:'Cozinhe o prato favorito, arrume a mesa e coloque música suave.',p:'R$ 80–200',c:'Românticos'},
+  {i:'🌹',n:'Rosa eterna na cúpula',d:'Dura anos e vira lembrança de um momento especial.',p:'R$ 100–250',c:'Românticos'},
+  {i:'📖',n:'Livro com dedicatória',d:'Escolha um livro que tenha a ver com ela(e) e escreva uma mensagem na primeira página.',p:'R$ 40–90',c:'Românticos'},
+  {i:'🏨',n:'Fim de semana numa pousada',d:'Uma escapada para um lugar tranquilo perto de vocês.',p:'R$ 300–900',c:'Experiências'},
+  {i:'🎬',n:'Noite de cinema em casa',d:'Pipoca, cobertor, filme escolhido por ela(e). Pode ter projetor ou só a TV.',p:'R$ 20–60',c:'Experiências'},
+  {i:'🎟️',n:'Ingressos para show ou peça',d:'Veja a agenda da cidade e escolha algo que ela(e) ama.',p:'R$ 100–400',c:'Experiências'},
+  {i:'🍝',n:'Aula de culinária a dois',d:'Aprendam juntos a fazer massa, sushi ou sobremesa.',p:'R$ 150–300',c:'Experiências'},
+  {i:'🌄',n:'Piquenique no pôr do sol',d:'Cesta, manta, suco e petiscos num lugar bonito.',p:'R$ 40–120',c:'Experiências'},
+  {i:'🧸',n:'Pelúcia ou bichinho',d:'Escolha o tamanho e o tema que combinam com o jeito dela(e).',p:'R$ 40–150',c:'Mimos'},
+  {i:'🧖‍♀️',n:'Kit spa em casa',d:'Máscara facial, vela, sais de banho e um chá. Complete com massagem.',p:'R$ 60–150',c:'Mimos'},
+  {i:'🧴',n:'Perfume ou hidratante preferido',d:'Observe o que ela(e) usa e escolha da mesma linha.',p:'R$ 80–300',c:'Mimos'},
+  {i:'🧣',n:'Cachecol ou meias fofas',d:'Para os dias frios, algo macio e com a cor favorita.',p:'R$ 40–120',c:'Mimos'},
+  {i:'🍰',n:'Café da manhã na cama',d:'Prepare com carinho, com flor e bilhete.',p:'R$ 20–60',c:'Mimos'}
+];
+
+/* ---------- splash ---------- */
+const TITLE = 'Diário das Emoções';
+const st = $('#stitle');
+TITLE.split(' ').forEach((w,wi,arr)=>{
+  const word = document.createElement('span'); word.style.display='inline-block'; word.style.whiteSpace='nowrap'; word.style.opacity=1; word.style.transform='none'; word.style.filter='none'; word.style.animation='none';
+  [...w].forEach((ch,i)=>{ const s=document.createElement('span'); s.textContent=ch; s.style.animationDelay=(0.6+(wi*0.35)+i*0.05)+'s'; word.appendChild(s); });
+  st.appendChild(word); if(wi<arr.length-1) st.appendChild(document.createTextNode(' '));
+});
+const HEART = '<svg width="100%" height="100%" viewBox="0 0 32 29"><path fill="currentColor" d="M23.6 0c-3.4 0-5.6 1.8-7.6 4.4C14 1.8 11.8 0 8.4 0 3.8 0 0 3.6 0 8.5c0 7.3 9.2 14 14.8 19.7.5.5 1.9.5 2.4 0C22.8 22.5 32 15.8 32 8.5 32 3.6 28.2 0 23.6 0z"/></svg>';
+const colors = ['#ff6aa2','#ff2d6f','#ff9ec4','#c084fc','#fb7185','#f472b6'];
+for(let i=0;i<34;i++){
+  const h=document.createElement('div'); h.className='fh'; h.innerHTML=HEART;
+  const size=14+Math.random()*34;
+  h.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;color:${colors[i%colors.length]};--dx:${(Math.random()-.5)*160}px;--rot:${(Math.random()-.5)*80}deg;animation-duration:${3.6+Math.random()*3.4}s;animation-delay:${Math.random()*3.2}s;animation-iteration-count:infinite;filter:drop-shadow(0 0 8px currentColor)`;
+  $('#splash').appendChild(h);
+}
+let splashDone=false;
+function endSplash(){
+  if(splashDone) return; splashDone=true;
+  $('#splash').classList.add('out');
+  setTimeout(()=>$('#splash').remove(),900);
+  boot();
+}
+$('#splash').addEventListener('click',endSplash);
+setTimeout(endSplash,4600);
+
+/* ---------- estado ---------- */
+let me = { name: store.get('de_name')||'', room: store.get('de_room')||'', uid: store.get('de_uid')||'' };
+if(!me.uid){ me.uid = 'u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); store.set('de_uid',me.uid); }
+let backend=null, unsub=null, entries=[], firstLoad=true, seen=new Set();
+let selMood=null, selFeel=null, tab=0;
+
+/* ---------- backends ---------- */
+const configured = firebaseConfig && firebaseConfig.apiKey && !String(firebaseConfig.apiKey).includes('COLE_AQUI');
+
+async function makeFirebase(room){
+  const A = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  const F = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+  const app = A.getApps().length ? A.getApp() : A.initializeApp(firebaseConfig);
+  const db = F.getFirestore(app);
+  const col = F.collection(db,'rooms',room,'entries');
+  return {
+    demo:false,
+    subscribe(cb,onErr){
+      const q = F.query(col, F.orderBy('createdAt','desc'), F.limit(100));
+      return F.onSnapshot(q, snap=>{
+        cb(snap.docs.map(d=>{
+          const x=d.data({serverTimestamps:'estimate'});
+          return {id:d.id,...x,createdAt: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : Date.now()};
+        }));
+      }, onErr);
+    },
+    add(e){ return F.addDoc(col,{...e,createdAt:F.serverTimestamp()}); },
+    remove(id){ return F.deleteDoc(F.doc(db,'rooms',room,'entries',id)); }
+  };
+}
+function makeDemo(room){
+  const key='de_demo_'+room;
+  const read=()=>{ try{ return JSON.parse(store.get(key)||'[]') }catch(e){ return [] } };
+  const listeners=new Set();
+  const fire=()=>listeners.forEach(cb=>cb(read().sort((a,b)=>b.createdAt-a.createdAt)));
+  window.addEventListener('storage',ev=>{ if(ev.key===key) fire(); });
+  return {
+    demo:true,
+    subscribe(cb){ listeners.add(cb); setTimeout(fire,0); return ()=>listeners.delete(cb); },
+    async add(e){ const a=read(); a.push({...e,id:'d'+Date.now(),createdAt:Date.now()}); store.set(key,JSON.stringify(a)); fire(); },
+    async remove(id){ store.set(key,JSON.stringify(read().filter(x=>x.id!==id))); fire(); }
+  };
+}
+
+/* ---------- helpers de UI ---------- */
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),3800);
+}
+function fmtTime(ms){
+  const d=new Date(ms), now=new Date();
+  const hm=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const same=d.toDateString()===now.toDateString();
+  const y=new Date(now); y.setDate(now.getDate()-1);
+  if(same) return 'hoje '+hm;
+  if(d.toDateString()===y.toDateString()) return 'ontem '+hm;
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+hm;
+}
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); $(id).classList.add('show'); }
+
+/* ---------- configuração ---------- */
+function validateSetup(){
+  const ok = $('#inName').value.trim().length>=1 && $('#inRoom').value.trim().length>=6;
+  $('#btnStart').disabled=!ok;
+}
+$('#inName').addEventListener('input',validateSetup);
+$('#inRoom').addEventListener('input',validateSetup);
+$('#btnStart').addEventListener('click',()=>{
+  me.name=$('#inName').value.trim();
+  me.room=$('#inRoom').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'-');
+  store.set('de_name',me.name); store.set('de_room',me.room);
+  enterApp();
+});
+$('#btnCfg').addEventListener('click',()=>{
+  $('#inName').value=me.name; $('#inRoom').value=me.room; validateSetup(); show('#setup');
+});
+
+function boot(){
+  if(me.name && me.room) enterApp(); else { show('#setup'); validateSetup(); }
+}
+
+async function enterApp(){
+  show('#app');
+  $('#sub').textContent = me.name+' · código: '+me.room;
+  if(unsub){ try{unsub()}catch(e){} unsub=null; }
+  entries=[]; firstLoad=true; seen=new Set(); render();
+  try{
+    backend = configured ? await makeFirebase(me.room) : makeDemo(me.room);
+  }catch(err){
+    console.error(err); backend=makeDemo(me.room);
+    toast('Não consegui conectar ao Firebase. Usando modo local.');
+  }
+  $('#demoBanner').style.display = backend.demo ? 'block':'none';
+  unsub = backend.subscribe(list=>{
+    if(!firstLoad){
+      list.forEach(e=>{
+        if(!seen.has(e.id) && e.uid!==me.uid){
+          toast(`${e.name} registrou: ${e.feeling||MOODS[e.mood].label} ${MOODS[e.mood].em}`);
+          if(navigator.vibrate) navigator.vibrate([60,40,60]);
+        }
+      });
+    }
+    list.forEach(e=>seen.add(e.id)); firstLoad=false;
+    entries=list; render();
+  }, err=>{
+    console.error(err);
+    toast('Sem permissão ou sem conexão com o Firebase. Veja o README (regras do Firestore).');
+  });
+}
+
+/* ---------- composer ---------- */
+const orbs=$('#orbs'), chips=$('#chips');
+Object.entries(MOODS).forEach(([k,m])=>{
+  const b=document.createElement('button'); b.className='orb'; b.style.setProperty('--c',m.color); b.dataset.k=k;
+  b.innerHTML=`<span class="em">${m.em}</span>${m.label}`;
+  b.onclick=()=>{ selMood=k; selFeel=null; drawComposer(); if(navigator.vibrate) navigator.vibrate(10); };
+  orbs.appendChild(b);
+});
+function drawComposer(){
+  orbs.querySelectorAll('.orb').forEach(o=>o.classList.toggle('sel',o.dataset.k===selMood));
+  chips.classList.toggle('open',!!selMood);
+  chips.innerHTML='';
+  if(selMood) MOODS[selMood].feelings.forEach(f=>{
+    const c=document.createElement('button'); c.className='chip'+(f===selFeel?' sel':''); c.textContent=f;
+    c.onclick=()=>{ selFeel = selFeel===f?null:f; drawComposer(); };
+    chips.appendChild(c);
+  });
+  $('#btnSave').disabled=!selMood;
+}
+$('#btnSave').addEventListener('click',async()=>{
+  if(!selMood||!backend) return;
+  const btn=$('#btnSave'); btn.disabled=true;
+  const e={uid:me.uid,name:me.name,mood:selMood,feeling:selFeel||'',text:$('#txt').value.trim()};
+  try{
+    await backend.add(e);
+    $('#txt').value=''; selMood=null; selFeel=null; drawComposer();
+    toast('Salvo! 💖 Ela(e) já pode ver.');
+  }catch(err){
+    console.error(err); toast('Erro ao salvar. Confira as regras do Firestore no README.'); btn.disabled=false;
+  }
+});
+
+/* ---------- renderização ---------- */
+function latestBy(uidFilter){ return entries.find(uidFilter); }
+function render(){
+  /* status */
+  const mine=latestBy(e=>e.uid===me.uid);
+  const other=latestBy(e=>e.uid!==me.uid);
+  const card=(e,label,empty)=>{
+    if(!e) return `<div class="scard glass empty"><div class="who"><span class="dot"></span>${esc(label)}</div><div class="feel">${empty}</div></div>`;
+    const m=MOODS[e.mood]||MOODS.yellow;
+    return `<div class="scard glass" style="--c:${m.color}"><div class="who"><span class="dot"></span>${esc(e.name)}</div>
+      <div class="feel">${m.em} ${esc(e.feeling||m.label)}</div><div class="when">${fmtTime(e.createdAt)}</div></div>`;
+  };
+  $('#status').innerHTML = card(mine, me.name||'Você','Sem registro') + card(other,'Seu amor','Aguardando…');
+
+  /* feed */
+  const feed=$('#feed');
+  if(!entries.length){ feed.innerHTML='<div class="emptymsg">Ainda não há registros.<br>Conte como você está se sentindo 💞</div>'; }
+  else feed.innerHTML=entries.map((e,i)=>{
+    const m=MOODS[e.mood]||MOODS.yellow, mine=e.uid===me.uid;
+    return `<div class="entry glass ${mine?'me':'other'}" style="--c:${m.color};animation-delay:${Math.min(i,8)*0.05}s">
+      <div class="top"><span class="name">${esc(e.name)}</span><span class="badge">${m.em} ${esc(e.feeling||m.label)}</span><span class="time">${fmtTime(e.createdAt)}</span></div>
+      ${e.text?`<p>${esc(e.text)}</p>`:''}
+      ${mine?`<button class="del" data-id="${esc(e.id)}">apagar</button>`:''}</div>`;
+  }).join('');
+  feed.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{
+    if(confirm('Apagar este registro para vocês dois?')) try{ await backend.remove(b.dataset.id) }catch(err){ toast('Não foi possível apagar.') }
+  });
+
+  /* dica do momento: baseada no último humor do(a) parceiro(a), senão no seu */
+  const ref = other || mine;
+  const tm = ref ? TIPS_MOOD[ref.mood] : {t:'Comece pelo diário 💞',p:'Registrem como se sentem. Quanto mais honestos vocês forem, mais fácil fica cuidar um do outro.'};
+  const col = ref ? MOODS[ref.mood].color : '#ec4899';
+  const tn=$('#tipnow'); tn.style.setProperty('--c',col);
+  tn.innerHTML=`<div class="lbl">${other?'Dica para agora, pelo humor de '+esc(other.name):'Dica do momento'}</div><h3>${tm.t}</h3><p>${tm.p}</p>`;
+}
+
+/* dicas */
+$('#tips').innerHTML=TIPS.map((t,i)=>`<div class="tip glass" style="animation-delay:${i*0.04}s"><div class="ic">${t.i}</div><div><h4>${t.t}</h4><p>${t.p}</p></div></div>`).join('');
+
+/* presentes */
+let gcat='Todos';
+function drawGifts(){
+  $('#gfilters').innerHTML=GCATS.map(c=>`<button class="chip${c===gcat?' sel':''}" data-c="${c}">${c}</button>`).join('');
+  $('#gfilters').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{gcat=b.dataset.c;drawGifts()});
+  $('#gifts').innerHTML=GIFTS.filter(g=>gcat==='Todos'||g.c===gcat).map((g,i)=>
+    `<div class="gift glass" style="animation-delay:${i*0.04}s"><div class="ic">${g.i}</div><div><h4>${g.n}</h4><p>${g.d}</p><div class="pr">${g.p}</div></div></div>`).join('');
+}
+drawGifts(); drawComposer();
+
+/* ---------- abas ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(+b.dataset.t));
+function go(n){
+  if(n===tab) return;
+  document.querySelectorAll('.panel').forEach((p,i)=>{
+    p.classList.toggle('active',i===n);
+    p.classList.toggle('left',i<n);
+  });
+  document.querySelectorAll('nav button').forEach((b,i)=>b.classList.toggle('on',i===n));
+  $('#ind').style.transform=`translateX(${n*100}%)`;
+  tab=n;
+  if(navigator.vibrate) navigator.vibrate(8);
+}
+
+/* ---------- PWA ---------- */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

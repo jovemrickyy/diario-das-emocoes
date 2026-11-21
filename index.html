@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#140a2a">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Diário das Emoções</title>
@@ -12,195 +12,187 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
-  --ease: cubic-bezier(.32,.72,0,1);
-  --spring: cubic-bezier(.34,1.56,.64,1);
-  --blue:#3b82f6; --yellow:#facc15; --red:#ef4444;
-  --txt:#fff; --txt2:rgba(255,255,255,.68); --txt3:rgba(255,255,255,.45);
-  --glass:rgba(255,255,255,.13);
-  --glass-strong:rgba(255,255,255,.2);
-  --stroke:rgba(255,255,255,.28);
-  --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom);
+  --ease:cubic-bezier(.22,.9,.28,1);
+  --spring:cubic-bezier(.3,1.25,.5,1);
+  --accent:#8b5cf6; --accent2:#b79cff;
+  --blue:#4f8cff; --yellow:#ffd23f; --red:#ff4d5e;
+  --txt:#fff; --txt2:rgba(255,255,255,.62); --txt3:rgba(255,255,255,.38);
+  --hair:rgba(255,255,255,.09);
+  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#140a2a;color:var(--txt);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased}
-button,input,textarea{font:inherit;color:inherit;border:0;outline:0;background:none}
+html,body{height:100%;overflow:hidden;overflow:clip;background:#000;color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+button,input,textarea{font:inherit;color:inherit;border:0;outline:0;background:none;letter-spacing:inherit}
 button{cursor:pointer}
 
-/* ===== fundo vivo ===== */
-.bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:linear-gradient(160deg,#1b0b3a,#0e1033 55%,#2a0d33)}
-.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.75;will-change:transform}
-.b1{width:60vmax;height:60vmax;left:-20vmax;top:-18vmax;background:#7c3aed;animation:drift1 18s ease-in-out infinite alternate}
-.b2{width:55vmax;height:55vmax;right:-22vmax;top:20vh;background:#ec4899;animation:drift2 22s ease-in-out infinite alternate}
-.b3{width:50vmax;height:50vmax;left:-10vmax;bottom:-20vmax;background:#2563eb;animation:drift3 20s ease-in-out infinite alternate}
-@keyframes drift1{to{transform:translate(18vmax,12vmax) scale(1.15)}}
-@keyframes drift2{to{transform:translate(-16vmax,-10vmax) scale(.9)}}
-@keyframes drift3{to{transform:translate(14vmax,-14vmax) scale(1.2)}}
+/* fundo: preto com luz roxa discreta, só para o vidro ter o que desfocar */
+.bg{position:fixed;inset:0;z-index:0;background:#000;overflow:hidden}
+.glow{position:absolute;border-radius:50%;filter:blur(100px);will-change:transform;opacity:.3}
+.g1{width:70vmax;height:70vmax;left:-35vmax;top:-30vmax;background:#5b21b6;animation:f1 26s ease-in-out infinite alternate}
+.g2{width:60vmax;height:60vmax;right:-40vmax;bottom:-25vmax;background:#6d28d9;opacity:.2;animation:f2 32s ease-in-out infinite alternate}
+@keyframes f1{to{transform:translate(14vmax,10vmax)}}
+@keyframes f2{to{transform:translate(-12vmax,-14vmax)}}
 
-/* ===== vidro ===== */
+/* vidro */
 .glass{
-  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.07));
-  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
-  border:1px solid var(--stroke);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.28);
-  border-radius:26px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  border:.5px solid rgba(255,255,255,.14);
+  box-shadow:inset 0 .5px 0 rgba(255,255,255,.28),0 8px 30px rgba(0,0,0,.35);
+  border-radius:22px;
 }
 
-/* ===== splash ===== */
-#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 50% 45%,#3a1160,#140a2a 70%);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease)}
-#splash.out{opacity:0;transform:scale(1.35);filter:blur(14px);pointer-events:none}
-.fh{position:absolute;bottom:-60px;opacity:0;animation:rise linear forwards;will-change:transform}
-@keyframes rise{0%{transform:translateY(0) translateX(0) rotate(0) scale(.6);opacity:0}
-  10%{opacity:.9}90%{opacity:.7}100%{transform:translateY(-115vh) translateX(var(--dx)) rotate(var(--rot)) scale(1.1);opacity:0}}
-.hero{position:relative;width:150px;height:150px;display:grid;place-items:center;margin-bottom:26px}
-.hero svg{width:130px;height:130px;filter:drop-shadow(0 0 28px rgba(255,64,129,.9));animation:enter 1.2s var(--spring) both,beat 1.3s ease-in-out 1.2s infinite}
-.ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,120,170,.6);animation:ring 2.4s ease-out infinite}
-.ring.r2{animation-delay:1.2s}
-@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
-@keyframes enter{0%{transform:scale(0) rotate(-25deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
-@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.14)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
-.stitle{font-size:34px;font-weight:800;letter-spacing:-.5px;text-align:center;line-height:1.1;padding:0 24px}
-.stitle span{display:inline-block;opacity:0;transform:translateY(22px) scale(.8);filter:blur(8px);animation:letter .7s var(--spring) forwards}
-@keyframes letter{to{opacity:1;transform:none;filter:none}}
-.ssub{margin-top:14px;font-size:14px;color:var(--txt2);opacity:0;animation:fade 1s ease 2.1s forwards;text-align:center}
-.ssub b{color:#ffb3cf;font-weight:600}
-.skip{position:absolute;bottom:calc(30px + var(--sab));font-size:12px;color:var(--txt3);opacity:0;animation:fade 1s ease 1.5s forwards}
+/* ===== entrada ===== */
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;
+  transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
+#splash.out{opacity:0;transform:scale(1.12);filter:blur(10px);pointer-events:none}
+#splash::before{content:"";position:absolute;width:90vmin;height:90vmin;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.38),transparent 65%);animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.15);opacity:.75}}
+.fh{position:absolute;bottom:-50px;opacity:0;animation:rise linear infinite;will-change:transform}
+@keyframes rise{0%{transform:translate3d(0,0,0) rotate(0) scale(.7);opacity:0}
+  15%{opacity:var(--o)}85%{opacity:var(--o)}100%{transform:translate3d(var(--dx),-112vh,0) rotate(var(--rot)) scale(1);opacity:0}}
+.hero{position:relative;width:120px;height:120px;display:grid;place-items:center;margin-bottom:30px;z-index:1}
+.hero svg{width:96px;height:96px;filter:drop-shadow(0 0 30px rgba(139,92,246,.75));animation:enter 1.3s var(--spring) both,beat 2.4s ease-in-out 1.4s infinite}
+@keyframes enter{0%{transform:scale(.2);opacity:0;filter:blur(12px)}100%{transform:scale(1);opacity:1}}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.09)}24%{transform:scale(1)}36%{transform:scale(1.05)}}
+.ring{position:absolute;inset:6px;border-radius:50%;border:1px solid rgba(167,139,250,.5);animation:ring 3s var(--ease) infinite;opacity:0}
+.ring.r2{animation-delay:1.5s}
+@keyframes ring{0%{transform:scale(.8);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+.stitle{position:relative;z-index:1;font-size:32px;font-weight:700;letter-spacing:-.03em;text-align:center;padding:0 24px}
+.stitle .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(8px);animation:word .9s var(--ease) forwards}
+@keyframes word{to{opacity:1;transform:none;filter:none}}
+.ssub{position:relative;z-index:1;margin-top:12px;font-size:13px;color:var(--txt2);opacity:0;animation:fade 1s ease 1.9s forwards}
+.ssub b{color:var(--accent2);font-weight:600}
+.skip{position:absolute;bottom:calc(28px + var(--sab));font-size:12px;color:var(--txt3);opacity:0;animation:fade 1s ease 1.6s forwards;z-index:1}
 @keyframes fade{to{opacity:1}}
 
 /* ===== telas ===== */
 .screen{position:fixed;inset:0;z-index:2;display:none}
-.screen.show{display:flex}
+.screen.show{display:flex;animation:screenIn .6s var(--ease) both}
+@keyframes screenIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
 #setup{align-items:center;justify-content:center;padding:24px}
-.setup-card{width:100%;max-width:420px;padding:28px 24px;animation:pop .7s var(--spring) both}
-@keyframes pop{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:none}}
-.setup-card h2{font-size:26px;margin-bottom:6px;letter-spacing:-.4px}
-.setup-card p{color:var(--txt2);font-size:14px;line-height:1.45;margin-bottom:18px}
-.field{display:block;margin-bottom:14px}
-.field span{display:block;font-size:12px;color:var(--txt2);margin:0 0 6px 4px;text-transform:uppercase;letter-spacing:.6px}
-.input{width:100%;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid var(--stroke);transition:.25s var(--ease)}
-.input:focus{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.6);transform:scale(1.01)}
+.setup-card{width:100%;max-width:400px;padding:28px 22px 22px;border-radius:28px}
+.setup-card h2{font-size:28px;margin-bottom:8px;letter-spacing:-.03em}
+.setup-card p{color:var(--txt2);font-size:15px;line-height:1.45;margin-bottom:20px}
+.field{display:block;margin-bottom:12px}
+.field span{display:block;font-size:12px;color:var(--txt3);margin:0 0 6px 4px;text-transform:uppercase;letter-spacing:.04em}
+.input{width:100%;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.07);border:.5px solid var(--hair);font-size:16px;transition:background .3s var(--ease),border-color .3s var(--ease)}
+.input:focus{background:rgba(255,255,255,.11);border-color:rgba(167,139,250,.7)}
 .input::placeholder{color:var(--txt3)}
-.btn{width:100%;padding:15px;border-radius:18px;font-weight:700;font-size:16px;
-  background:linear-gradient(135deg,#ff4d8d,#8b5cf6);box-shadow:0 8px 24px rgba(236,72,153,.4),inset 0 1px 0 rgba(255,255,255,.5);
-  transition:transform .35s var(--spring),opacity .2s,filter .2s}
-.btn:active{transform:scale(.95)}
-.btn:disabled{opacity:.4;filter:grayscale(.6)}
-.hint{font-size:12px;color:var(--txt3);margin-top:12px;line-height:1.4}
+.btn{width:100%;padding:15px;border-radius:14px;font-weight:600;font-size:16px;background:var(--accent);color:#fff;
+  transition:transform .35s var(--spring),opacity .25s,background .25s}
+.btn:active{transform:scale(.97);background:#7c4ae6}
+.btn:disabled{opacity:.35}
+.hint{font-size:12px;color:var(--txt3);margin-top:14px;line-height:1.45}
 
 #app{flex-direction:column}
-header{padding:calc(14px + var(--sat)) 18px 8px;display:flex;align-items:center;justify-content:space-between}
-header h1{font-size:24px;letter-spacing:-.5px;font-weight:800}
-header small{display:block;color:var(--txt2);font-size:12px;margin-top:2px}
-.iconbtn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:18px;transition:transform .3s var(--spring)}
-.iconbtn:active{transform:scale(.85)}
+header{padding:calc(16px + var(--sat)) 20px 6px;display:flex;align-items:flex-end;justify-content:space-between}
+header h1{font-size:30px;letter-spacing:-.035em;font-weight:700;line-height:1.1}
+header small{display:block;color:var(--txt3);font-size:13px;margin-top:4px}
+.pill{padding:8px 14px;border-radius:20px;font-size:14px;font-weight:500;color:var(--accent2);transition:transform .3s var(--spring),background .3s}
+.pill:active{transform:scale(.93)}
 
-main{flex:1;position:relative;overflow:hidden}
-.panel{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:6px 16px calc(110px + var(--sab));
-  opacity:0;transform:translateX(40px) scale(.98);pointer-events:none;transition:opacity .45s var(--ease),transform .5s var(--ease);
-  -webkit-overflow-scrolling:touch}
+main{flex:1;position:relative;overflow:hidden;overflow:clip;contain:paint}
+.panel{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:10px 16px calc(112px + var(--sab));
+  opacity:0;transform:translateX(28px);pointer-events:none;transition:opacity .45s var(--ease),transform .55s var(--ease);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.panel::-webkit-scrollbar{display:none}
 .panel.active{opacity:1;transform:none;pointer-events:auto}
-.panel.left{transform:translateX(-40px) scale(.98)}
+.panel.left{transform:translateX(-28px)}
 
 /* barra inferior */
-nav{position:fixed;left:50%;bottom:calc(14px + var(--sab));transform:translateX(-50%);z-index:10;width:min(92vw,420px);height:66px;
-  display:grid;grid-template-columns:repeat(3,1fr);padding:6px;border-radius:34px}
-nav .ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/3);border-radius:28px;
-  background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.14));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 4px 14px rgba(0,0,0,.2);
-  transition:transform .55s var(--spring)}
-nav button{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:var(--txt2);font-weight:600;transition:color .3s,transform .3s var(--spring)}
-nav button .e{font-size:22px;transition:transform .4s var(--spring)}
-nav button.on{color:#fff}
-nav button.on .e{transform:scale(1.2) translateY(-1px)}
+nav{position:fixed;left:50%;bottom:calc(12px + var(--sab));transform:translateX(-50%);z-index:10;width:min(90vw,380px);height:64px;
+  display:grid;grid-template-columns:repeat(3,1fr);padding:5px;border-radius:32px;background:rgba(18,14,28,.78);-webkit-backdrop-filter:blur(40px) saturate(200%);backdrop-filter:blur(40px) saturate(200%)}
+nav .ind{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/3);border-radius:27px;background:rgba(255,255,255,.12);
+  box-shadow:inset 0 .5px 0 rgba(255,255,255,.3);transition:transform .6s var(--spring)}
+nav button{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:500;color:var(--txt3);transition:color .35s,transform .3s var(--spring)}
+nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--accent2)}
 nav button:active{transform:scale(.9)}
 
-/* status do casal */
-.status{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 14px}
-.scard{padding:14px;position:relative;overflow:hidden;transition:box-shadow .6s,border-color .6s}
-.scard::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 0%,var(--c,transparent),transparent 65%);opacity:.55;transition:.6s}
-.scard>*{position:relative}
-.scard .who{font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:6px}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--c,#888);box-shadow:0 0 12px var(--c,transparent)}
-.scard .feel{font-size:19px;font-weight:700;margin-top:8px;letter-spacing:-.3px}
-.scard .when{font-size:11px;color:var(--txt3);margin-top:4px}
-.scard.empty{opacity:.7}
+/* títulos de seção estilo iOS */
+.sect{font-size:13px;color:var(--txt3);margin:22px 6px 8px;text-transform:uppercase;letter-spacing:.04em;font-weight:500;display:flex;align-items:center;gap:10px}
+.sect:first-child{margin-top:6px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--accent2);text-transform:none;letter-spacing:0;margin-left:auto}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:blink 2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* humor do casal */
+.status{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 0}
+.scard{padding:14px 16px;transition:background .5s}
+.scard .who{font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c,#555);flex:none;box-shadow:0 0 10px color-mix(in srgb,var(--c,transparent) 70%,transparent);transition:background .5s,box-shadow .5s}
+.scard .feel{font-size:20px;font-weight:600;margin-top:10px;letter-spacing:-.025em}
+.scard .when{font-size:12px;color:var(--txt3);margin-top:3px}
+.scard.empty .feel{color:var(--txt3);font-weight:500;font-size:17px}
 
 /* compositor */
-.composer{padding:16px;margin-bottom:16px}
-.composer h3{font-size:15px;margin-bottom:12px;color:var(--txt2);font-weight:600}
-.orbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.orb{aspect-ratio:1/.95;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  background:rgba(255,255,255,.1);border:1px solid var(--stroke);font-size:12px;font-weight:600;color:var(--txt2);
-  transition:transform .45s var(--spring),background .3s,box-shadow .4s,color .3s}
-.orb .em{font-size:30px;transition:transform .5s var(--spring)}
-.orb:active{transform:scale(.92)}
-.orb.sel{color:#fff;transform:scale(1.07);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 85%,#fff 0%),color-mix(in srgb,var(--c) 45%,#000 0%));
-  box-shadow:0 0 0 2px rgba(255,255,255,.5),0 10px 28px color-mix(in srgb,var(--c) 70%,transparent)}
-.orb.sel .em{transform:scale(1.25) rotate(-6deg)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;max-height:0;opacity:0;overflow:hidden;transition:max-height .6s var(--ease),opacity .4s,margin .4s}
-.chips.open{max-height:200px;opacity:1}
-.chip{padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;background:rgba(255,255,255,.12);border:1px solid var(--stroke);
-  transition:transform .35s var(--spring),background .25s}
-.chip:active{transform:scale(.92)}
-.chip.sel{background:rgba(255,255,255,.9);color:#1b0b3a;transform:scale(1.06)}
-textarea.input{margin-top:14px;min-height:84px;resize:none;display:block}
+.composer{padding:16px}
+.composer h3{font-size:17px;font-weight:600;margin-bottom:14px;letter-spacing:-.02em}
+.moods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mood{padding:14px 6px 12px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--txt2);
+  background:rgba(255,255,255,.05);border:.5px solid var(--hair);transition:transform .4s var(--spring),background .3s,border-color .3s,color .3s}
+.mood .dot{width:22px;height:22px;box-shadow:none;transition:transform .5s var(--spring),box-shadow .4s}
+.mood:active{transform:scale(.95)}
+.mood.sel{color:#fff;background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.4)}
+.mood.sel .dot{transform:scale(1.2);box-shadow:0 0 18px var(--c)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;max-height:0;opacity:0;overflow:hidden;transition:max-height .6s var(--ease),opacity .4s,margin .5s var(--ease)}
+.chips.open{max-height:180px;opacity:1;margin-top:14px}
+.chip{padding:8px 14px;border-radius:18px;font-size:14px;font-weight:500;color:var(--txt2);background:rgba(255,255,255,.07);border:.5px solid var(--hair);
+  transition:transform .35s var(--spring),background .25s,color .25s}
+.chip:active{transform:scale(.93)}
+.chip.sel{background:var(--accent);border-color:transparent;color:#fff}
+textarea.input{margin-top:14px;min-height:84px;resize:none;display:block;line-height:1.4}
 .composer .btn{margin-top:12px}
 
 /* feed */
-.sect{font-size:13px;color:var(--txt2);margin:4px 4px 10px;font-weight:600;display:flex;align-items:center;gap:8px}
-.live{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7dffb0;font-weight:700}
-.live i{width:7px;height:7px;border-radius:50%;background:#34d399;animation:blink 1.4s infinite}
-@keyframes blink{50%{opacity:.25;transform:scale(.7)}}
-.entry{padding:14px 16px;margin-bottom:12px;border-left:5px solid var(--c);position:relative;animation:enterIn .7s var(--spring) both}
-.entry.me{margin-left:26px}
-.entry.other{margin-right:26px}
-@keyframes enterIn{from{opacity:0;transform:translateY(24px) scale(.92);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
-.entry .top{display:flex;align-items:center;gap:8px;font-size:13px}
-.entry .name{font-weight:700}
-.entry .badge{padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;background:color-mix(in srgb,var(--c) 35%,transparent);border:1px solid color-mix(in srgb,var(--c) 70%,transparent)}
-.entry .time{margin-left:auto;font-size:11px;color:var(--txt3)}
-.entry p{margin-top:8px;font-size:15px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
-.entry .del{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--txt3);padding:4px 8px}
-.emptymsg{text-align:center;color:var(--txt3);padding:30px 10px;font-size:14px;line-height:1.5}
+.entry{padding:14px 16px;margin-bottom:10px;position:relative;animation:up .6s var(--ease) both}
+.entry.me{margin-left:30px;background:rgba(139,92,246,.17);border-color:rgba(167,139,250,.28)}
+.entry.other{margin-right:30px}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.entry .top{display:flex;align-items:center;gap:8px;font-size:14px}
+.entry .name{font-weight:600}
+.entry .badge{display:inline-flex;align-items:center;gap:6px;color:var(--txt2);font-size:13px}
+.entry .time{margin-left:auto;font-size:12px;color:var(--txt3)}
+.entry p{margin-top:8px;font-size:16px;line-height:1.4;white-space:pre-wrap;word-break:break-word}
+.entry .del{display:block;margin:8px 0 -4px auto;font-size:12.5px;color:var(--txt3);padding:2px 0}
+.emptymsg{text-align:center;color:var(--txt3);padding:36px 10px;font-size:15px;line-height:1.5}
 
-/* dicas e presentes */
-.tipnow{padding:18px;margin:8px 0 16px;position:relative;overflow:hidden}
-.tipnow::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,var(--c,#ec4899),transparent 70%);opacity:.5}
-.tipnow>*{position:relative}
-.tipnow .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);font-weight:700}
-.tipnow h3{font-size:18px;margin:6px 0;letter-spacing:-.3px}
-.tipnow p{font-size:14px;line-height:1.5;color:rgba(255,255,255,.88)}
-.tip{padding:16px;margin-bottom:12px;display:flex;gap:14px;animation:enterIn .6s var(--spring) both}
-.tip .ic{font-size:28px;flex:none;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.14)}
-.tip h4{font-size:15px;margin-bottom:4px}
-.tip p{font-size:13.5px;line-height:1.5;color:var(--txt2)}
-.filters{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none}
+/* dicas e presentes: listas agrupadas */
+.group{overflow:hidden}
+.row{padding:15px 16px;border-top:.5px solid var(--hair);animation:up .6s var(--ease) both}
+.row:first-child{border-top:0}
+.row h4{font-size:16px;font-weight:600;letter-spacing:-.02em}
+.row p{font-size:14.5px;line-height:1.45;color:var(--txt2);margin-top:4px}
+.row.gift{display:flex;gap:14px;align-items:center}
+.row.gift .ic{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:23px;background:rgba(255,255,255,.07);border:.5px solid var(--hair)}
+.row.gift .pr{font-size:12.5px;color:var(--accent2);margin-top:5px;font-weight:500}
+.tipnow{padding:18px;margin-top:6px;background:rgba(139,92,246,.15);border-color:rgba(167,139,250,.3)}
+.tipnow .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent2);font-weight:600}
+.tipnow h3{font-size:20px;margin:8px 0 6px;letter-spacing:-.025em}
+.tipnow p{font-size:15px;line-height:1.5;color:rgba(255,255,255,.82)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 14px;scrollbar-width:none}
 .filters::-webkit-scrollbar{display:none}
 .filters .chip{flex:none}
-.gift{padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;animation:enterIn .6s var(--spring) both}
-.gift .ic{font-size:30px;flex:none;width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.14)}
-.gift h4{font-size:15px}
-.gift p{font-size:13px;color:var(--txt2);margin-top:2px;line-height:1.4}
-.gift .pr{font-size:12px;color:#ffb3cf;margin-top:4px;font-weight:600}
 
-/* toast */
-#toast{position:fixed;top:calc(12px + var(--sat));left:50%;z-index:200;transform:translate(-50%,-140%);padding:12px 18px;border-radius:22px;
-  max-width:90vw;font-size:14px;font-weight:600;transition:transform .6s var(--spring)}
+/* aviso */
+#toast{position:fixed;top:calc(10px + var(--sat));left:50%;z-index:200;transform:translate(-50%,-160%);padding:13px 20px;border-radius:24px;
+  max-width:90vw;font-size:14.5px;font-weight:500;transition:transform .65s var(--spring)}
 #toast.show{transform:translate(-50%,0)}
-.banner{margin:6px 0 12px;padding:12px 14px;border-radius:18px;font-size:12.5px;line-height:1.45;background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.5);color:#fde68a}
+.banner{margin:4px 0 14px;padding:12px 14px;border-radius:16px;font-size:13px;line-height:1.45;color:var(--txt2);background:rgba(255,255,255,.05);border:.5px dashed rgba(167,139,250,.5)}
 
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="bg"><div class="glow g1"></div><div class="glow g2"></div></div>
 
 <!-- ENTRADA ANIMADA -->
 <div id="splash">
   <div class="hero">
     <div class="ring"></div><div class="ring r2"></div>
-    <svg viewBox="0 0 32 29"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6aa2"/><stop offset="1" stop-color="#ff2d6f"/></linearGradient></defs>
+    <svg viewBox="0 0 32 29"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b0ff"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
       <path fill="url(#hg)" d="M23.6 0c-3.4 0-5.6 1.8-7.6 4.4C14 1.8 11.8 0 8.4 0 3.8 0 0 3.6 0 8.5c0 7.3 9.2 14 14.8 19.7.5.5 1.9.5 2.4 0C22.8 22.5 32 15.8 32 8.5 32 3.6 28.2 0 23.6 0z"/></svg>
   </div>
   <div class="stitle" id="stitle"></div>
@@ -211,12 +203,12 @@ textarea.input{margin-top:14px;min-height:84px;resize:none;display:block}
 <!-- CONFIGURAÇÃO -->
 <section class="screen" id="setup">
   <div class="setup-card glass">
-    <h2>Bem-vindo(a) 💞</h2>
-    <p>Escolha seu nome e um <b>código do casal</b>. Vocês dois usam o <b>mesmo código</b> para ver o diário um do outro ao vivo.</p>
+    <h2>Bem-vindo(a)</h2>
+    <p>Escolha seu nome e um <b>código do casal</b>. Vocês dois usam o mesmo código para ver o diário um do outro ao vivo.</p>
     <label class="field"><span>Seu nome</span><input class="input" id="inName" maxlength="20" placeholder="Ex.: Luiz" autocomplete="off"></label>
-    <label class="field"><span>Código do casal</span><input class="input" id="inRoom" maxlength="30" placeholder="Ex.: nosso-amor-2026" autocomplete="off" autocapitalize="none"></label>
-    <button class="btn" id="btnStart" disabled>Entrar</button>
-    <p class="hint">Escolha um código difícil de adivinhar: ele é a "chave" do diário de vocês. Mínimo de 6 caracteres.</p>
+    <label class="field"><span>Código do casal</span><input class="input" id="inRoom" maxlength="30" placeholder="Ex.: nosso-codigo-2026" autocomplete="off" autocapitalize="none"></label>
+    <button class="btn" id="btnStart" disabled>Continuar</button>
+    <p class="hint">Escolha um código difícil de adivinhar: ele é a chave do diário de vocês. Mínimo de 6 caracteres.</p>
   </div>
 </section>
 
@@ -224,17 +216,18 @@ textarea.input{margin-top:14px;min-height:84px;resize:none;display:block}
 <section class="screen" id="app">
   <header>
     <div><h1>Diário das Emoções</h1><small id="sub"></small></div>
-    <button class="iconbtn glass" id="btnCfg" aria-label="Configurações">⚙️</button>
+    <button class="pill" id="btnCfg">Ajustes</button>
   </header>
   <main>
     <div class="panel active" id="p0">
-      <div id="demoBanner" class="banner" style="display:none">Modo demonstração: as mensagens ficam só neste aparelho. Siga o README para ligar o Firebase e sincronizar com sua parceira.</div>
+      <div id="demoBanner" class="banner" style="display:none">Modo demonstração: os registros ficam só neste aparelho. Siga o README para ligar o Firebase e sincronizar com sua parceira.</div>
       <div class="status" id="status"></div>
+      <div class="sect">Novo registro</div>
       <div class="composer glass">
-        <h3>Como você está se sentindo?</h3>
-        <div class="orbs" id="orbs"></div>
+        <h3>Como você está?</h3>
+        <div class="moods" id="moods"></div>
         <div class="chips" id="chips"></div>
-        <textarea class="input" id="txt" maxlength="500" placeholder="Escreva o que aconteceu, o que você precisa…"></textarea>
+        <textarea class="input" id="txt" maxlength="500" placeholder="O que aconteceu? Do que você precisa?"></textarea>
         <button class="btn" id="btnSave" disabled>Salvar e compartilhar</button>
       </div>
       <div class="sect">Diário de vocês <span class="live"><i></i>ao vivo</span></div>
@@ -242,20 +235,20 @@ textarea.input{margin-top:14px;min-height:84px;resize:none;display:block}
     </div>
     <div class="panel" id="p1">
       <div class="tipnow glass" id="tipnow"></div>
-      <div class="sect">Dicas para fortalecer o relacionamento</div>
-      <div id="tips"></div>
+      <div class="sect">Para fortalecer o relacionamento</div>
+      <div class="group glass" id="tips"></div>
     </div>
     <div class="panel" id="p2">
-      <div class="sect" style="margin-top:8px">Ideias de presentes</div>
+      <div class="sect">Ideias de presentes</div>
       <div class="filters" id="gfilters"></div>
-      <div id="gifts"></div>
+      <div class="group glass" id="gifts"></div>
     </div>
   </main>
   <nav class="glass" id="nav">
     <div class="ind" id="ind"></div>
-    <button class="on" data-t="0"><span class="e">📖</span>Diário</button>
-    <button data-t="1"><span class="e">💡</span>Dicas</button>
-    <button data-t="2"><span class="e">🎁</span>Presentes</button>
+    <button class="on" data-t="0"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg>Diário</button>
+    <button data-t="1"><svg viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.2 1.1 2.2h5c0-1 .5-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></svg>Dicas</button>
+    <button data-t="2"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="1.5"/><rect x="3" y="7" width="18" height="3" rx="1"/><path d="M12 7v13"/><path d="M12 7C10 7 8 6 8 4.8S9.8 3.2 12 7c2.2-3.8 4-2.4 4-2.2S14 7 12 7z"/></svg>Presentes</button>
   </nav>
 </section>
 
@@ -273,29 +266,28 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>'
 
 /* ---------- dados fixos ---------- */
 const MOODS = {
-  blue:   { label:'Bem',            em:'😊', color:'#3b82f6', feelings:['Feliz','Apaixonado(a)','Grato(a)','Tranquilo(a)','Animado(a)','Carinhoso(a)'] },
-  yellow: { label:'Mais ou menos',  em:'😐', color:'#facc15', feelings:['Cansado(a)','Ansioso(a)','Entediado(a)','Carente','Pensativo(a)','Preocupado(a)'] },
-  red:    { label:'Irritado(a)',    em:'😡', color:'#ef4444', feelings:['Irritado(a)','Triste','Magoado(a)','Estressado(a)','Com ciúmes','Aconteceu algo'] }
+  blue:   { label:'Bem',           color:'#4f8cff', feelings:['Feliz','Apaixonado(a)','Grato(a)','Tranquilo(a)','Animado(a)','Carinhoso(a)'] },
+  yellow: { label:'Mais ou menos', color:'#ffd23f', feelings:['Cansado(a)','Ansioso(a)','Entediado(a)','Carente','Pensativo(a)','Preocupado(a)'] },
+  red:    { label:'Irritado(a)',   color:'#ff4d5e', feelings:['Irritado(a)','Triste','Magoado(a)','Estressado(a)','Com ciúmes','Aconteceu algo'] }
 };
-
 const TIPS_MOOD = {
-  blue:   { t:'Aproveite a onda boa 💙', p:'Quando o humor está bom, é a hora de agradecer. Mande uma mensagem dizendo uma coisa específica que você ama nela(e) hoje.' },
-  yellow: { t:'Um dia meio cinza 💛', p:'Pergunte "quer conversar ou prefere só companhia?". Muitas vezes a pessoa só precisa saber que não está sozinha, sem precisar resolver nada.' },
-  red:    { t:'Hora de ter calma ❤️', p:'Não discuta no calor do momento. Ouça sem interromper, valide o que sentiu ("faz sentido você se sentir assim") e só depois fale do seu lado. Um abraço sem pressa ajuda muito.' }
+  blue:   { t:'Aproveite o bom momento', p:'Quando o humor está bom, é a hora de agradecer. Mande uma mensagem dizendo uma coisa específica que você ama nela(e) hoje.' },
+  yellow: { t:'Um dia meio cinza', p:'Pergunte "quer conversar ou prefere só companhia?". Muitas vezes a pessoa só precisa saber que não está sozinha, sem precisar resolver nada.' },
+  red:    { t:'Hora de ter calma', p:'Não discuta no calor do momento. Ouça sem interromper, valide o que sentiu ("faz sentido você se sentir assim") e só depois fale do seu lado. Um abraço sem pressa ajuda muito.' }
 };
 const TIPS = [
-  {i:'👂',t:'Escuta de verdade',p:'Largue o celular, olhe nos olhos e ouça até o fim. Tente repetir com suas palavras o que entendeu antes de responder.'},
-  {i:'🗣️',t:'Fale "eu me sinto…"',p:'Em vez de "você sempre faz isso", diga "eu me senti ignorado(a) quando…". Isso evita defesa e abre conversa.'},
-  {i:'⏸️',t:'Combine uma pausa',p:'Se a conversa esquentar, peçam 20 minutos de pausa e voltem depois. Pausa não é fugir, é cuidar.'},
-  {i:'💌',t:'Pequenos gestos todo dia',p:'Um bom dia carinhoso, um "cheguei bem", um bilhete. O que mantém o amor vivo é a constância, não só as grandes surpresas.'},
-  {i:'🙏',t:'Agradeça em voz alta',p:'Todo dia, diga uma coisa pela qual você é grato(a) ao outro. Parece simples, mas muda o clima da relação.'},
-  {i:'📅',t:'Encontro semanal',p:'Reservem um momento por semana só para vocês, sem tela e sem tarefas. Pode ser um café ou uma caminhada.'},
-  {i:'🤝',t:'Peçam desculpas direito',p:'Um bom pedido de desculpas tem 3 partes: o que eu fiz, como isso te afetou e o que vou fazer diferente.'},
-  {i:'🌱',t:'Respeitem o tempo de cada um',p:'Cada pessoa processa emoções num ritmo. Perguntar "do que você precisa agora?" vale mais do que adivinhar.'},
-  {i:'😂',t:'Rir juntos',p:'Lembrem de piadas internas, vejam algo engraçado juntos. O humor é um dos melhores protetores do casal.'},
-  {i:'🎯',t:'Sonhos em comum',p:'Conversem sobre planos para os próximos meses e anos. Ter um objetivo juntos aproxima.'},
-  {i:'🫶',t:'Toque e carinho',p:'Abraço longo (20 segundos) ajuda a reduzir o estresse. Sem motivo, só porque sim.'},
-  {i:'📝',t:'Use este diário com honestidade',p:'Registrar o que sente antes de explodir ajuda o outro a entender você, e você a entender a si mesmo(a).'}
+  {t:'Escuta de verdade',p:'Largue o celular, olhe nos olhos e ouça até o fim. Tente repetir com suas palavras o que entendeu antes de responder.'},
+  {t:'Fale "eu me sinto…"',p:'Em vez de "você sempre faz isso", diga "eu me senti ignorado(a) quando…". Isso evita defesa e abre conversa.'},
+  {t:'Combine uma pausa',p:'Se a conversa esquentar, peçam 20 minutos de pausa e voltem depois. Pausa não é fugir, é cuidar.'},
+  {t:'Pequenos gestos todo dia',p:'Um bom dia carinhoso, um "cheguei bem", um bilhete. O que mantém o amor vivo é a constância, não só as grandes surpresas.'},
+  {t:'Agradeça em voz alta',p:'Todo dia, diga uma coisa pela qual você é grato(a) ao outro. Parece simples, mas muda o clima da relação.'},
+  {t:'Encontro semanal',p:'Reservem um momento por semana só para vocês, sem tela e sem tarefas. Pode ser um café ou uma caminhada.'},
+  {t:'Peçam desculpas direito',p:'Um bom pedido de desculpas tem 3 partes: o que eu fiz, como isso te afetou e o que vou fazer diferente.'},
+  {t:'Respeitem o tempo de cada um',p:'Cada pessoa processa emoções num ritmo. Perguntar "do que você precisa agora?" vale mais do que adivinhar.'},
+  {t:'Riam juntos',p:'Lembrem de piadas internas, vejam algo engraçado juntos. O humor é um dos melhores protetores do casal.'},
+  {t:'Sonhos em comum',p:'Conversem sobre planos para os próximos meses e anos. Ter um objetivo juntos aproxima.'},
+  {t:'Toque e carinho',p:'Um abraço longo (20 segundos) ajuda a reduzir o estresse. Sem motivo, só porque sim.'},
+  {t:'Use este diário com honestidade',p:'Registrar o que sente antes de explodir ajuda o outro a entender você, e você a entender a si mesmo(a).'}
 ];
 const GCATS = ['Todos','Até R$ 50','Românticos','Experiências','Mimos'];
 const GIFTS = [
@@ -315,37 +307,35 @@ const GIFTS = [
   {i:'🍝',n:'Aula de culinária a dois',d:'Aprendam juntos a fazer massa, sushi ou sobremesa.',p:'R$ 150–300',c:'Experiências'},
   {i:'🌄',n:'Piquenique no pôr do sol',d:'Cesta, manta, suco e petiscos num lugar bonito.',p:'R$ 40–120',c:'Experiências'},
   {i:'🧸',n:'Pelúcia ou bichinho',d:'Escolha o tamanho e o tema que combinam com o jeito dela(e).',p:'R$ 40–150',c:'Mimos'},
-  {i:'🧖‍♀️',n:'Kit spa em casa',d:'Máscara facial, vela, sais de banho e um chá. Complete com massagem.',p:'R$ 60–150',c:'Mimos'},
+  {i:'🧖',n:'Kit spa em casa',d:'Máscara facial, vela, sais de banho e um chá. Complete com massagem.',p:'R$ 60–150',c:'Mimos'},
   {i:'🧴',n:'Perfume ou hidratante preferido',d:'Observe o que ela(e) usa e escolha da mesma linha.',p:'R$ 80–300',c:'Mimos'},
   {i:'🧣',n:'Cachecol ou meias fofas',d:'Para os dias frios, algo macio e com a cor favorita.',p:'R$ 40–120',c:'Mimos'},
   {i:'🍰',n:'Café da manhã na cama',d:'Prepare com carinho, com flor e bilhete.',p:'R$ 20–60',c:'Mimos'}
 ];
 
-/* ---------- splash ---------- */
-const TITLE = 'Diário das Emoções';
+/* ---------- entrada animada ---------- */
 const st = $('#stitle');
-TITLE.split(' ').forEach((w,wi,arr)=>{
-  const word = document.createElement('span'); word.style.display='inline-block'; word.style.whiteSpace='nowrap'; word.style.opacity=1; word.style.transform='none'; word.style.filter='none'; word.style.animation='none';
-  [...w].forEach((ch,i)=>{ const s=document.createElement('span'); s.textContent=ch; s.style.animationDelay=(0.6+(wi*0.35)+i*0.05)+'s'; word.appendChild(s); });
-  st.appendChild(word); if(wi<arr.length-1) st.appendChild(document.createTextNode(' '));
+'Diário das Emoções'.split(' ').forEach((w,i,a)=>{
+  const s=document.createElement('span'); s.className='w'; s.textContent=w; s.style.animationDelay=(0.7+i*0.22)+'s';
+  st.appendChild(s); if(i<a.length-1) st.appendChild(document.createTextNode(' '));
 });
 const HEART = '<svg width="100%" height="100%" viewBox="0 0 32 29"><path fill="currentColor" d="M23.6 0c-3.4 0-5.6 1.8-7.6 4.4C14 1.8 11.8 0 8.4 0 3.8 0 0 3.6 0 8.5c0 7.3 9.2 14 14.8 19.7.5.5 1.9.5 2.4 0C22.8 22.5 32 15.8 32 8.5 32 3.6 28.2 0 23.6 0z"/></svg>';
-const colors = ['#ff6aa2','#ff2d6f','#ff9ec4','#c084fc','#fb7185','#f472b6'];
-for(let i=0;i<34;i++){
+const hc = ['#a78bfa','#8b5cf6','#c4b5fd','#7c3aed','#ddd6fe'];
+for(let i=0;i<22;i++){
   const h=document.createElement('div'); h.className='fh'; h.innerHTML=HEART;
-  const size=14+Math.random()*34;
-  h.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;color:${colors[i%colors.length]};--dx:${(Math.random()-.5)*160}px;--rot:${(Math.random()-.5)*80}deg;animation-duration:${3.6+Math.random()*3.4}s;animation-delay:${Math.random()*3.2}s;animation-iteration-count:infinite;filter:drop-shadow(0 0 8px currentColor)`;
+  const size=10+Math.random()*24;
+  h.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;color:${hc[i%hc.length]};--o:${(.25+Math.random()*.5).toFixed(2)};--dx:${(Math.random()-.5)*120}px;--rot:${(Math.random()-.5)*60}deg;animation-duration:${6+Math.random()*5}s;animation-delay:${-Math.random()*8}s;filter:blur(${Math.random()<.35?1.5:0}px)`;
   $('#splash').appendChild(h);
 }
 let splashDone=false;
 function endSplash(){
   if(splashDone) return; splashDone=true;
   $('#splash').classList.add('out');
-  setTimeout(()=>$('#splash').remove(),900);
+  setTimeout(()=>$('#splash').remove(),950);
   boot();
 }
 $('#splash').addEventListener('click',endSplash);
-setTimeout(endSplash,4600);
+setTimeout(endSplash,4400);
 
 /* ---------- estado ---------- */
 let me = { name: store.get('de_name')||'', room: store.get('de_room')||'', uid: store.get('de_uid')||'' };
@@ -391,26 +381,25 @@ function makeDemo(room){
   };
 }
 
-/* ---------- helpers de UI ---------- */
+/* ---------- helpers ---------- */
 function toast(msg){
   const t=$('#toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),3800);
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),3600);
 }
 function fmtTime(ms){
   const d=new Date(ms), now=new Date();
   const hm=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const same=d.toDateString()===now.toDateString();
   const y=new Date(now); y.setDate(now.getDate()-1);
-  if(same) return 'hoje '+hm;
+  if(d.toDateString()===now.toDateString()) return 'hoje '+hm;
   if(d.toDateString()===y.toDateString()) return 'ontem '+hm;
   return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+hm;
 }
 function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show')); $(id).classList.add('show'); }
+const dotHtml = k => `<span class="dot" style="--c:${(MOODS[k]||MOODS.yellow).color}"></span>`;
 
 /* ---------- configuração ---------- */
 function validateSetup(){
-  const ok = $('#inName').value.trim().length>=1 && $('#inRoom').value.trim().length>=6;
-  $('#btnStart').disabled=!ok;
+  $('#btnStart').disabled = !($('#inName').value.trim().length>=1 && $('#inRoom').value.trim().length>=6);
 }
 $('#inName').addEventListener('input',validateSetup);
 $('#inRoom').addEventListener('input',validateSetup);
@@ -423,50 +412,40 @@ $('#btnStart').addEventListener('click',()=>{
 $('#btnCfg').addEventListener('click',()=>{
   $('#inName').value=me.name; $('#inRoom').value=me.room; validateSetup(); show('#setup');
 });
-
-function boot(){
-  if(me.name && me.room) enterApp(); else { show('#setup'); validateSetup(); }
-}
+function boot(){ if(me.name && me.room) enterApp(); else { show('#setup'); validateSetup(); } }
 
 async function enterApp(){
   show('#app');
-  $('#sub').textContent = me.name+' · código: '+me.room;
+  $('#sub').textContent = me.name+' · '+me.room;
   if(unsub){ try{unsub()}catch(e){} unsub=null; }
   entries=[]; firstLoad=true; seen=new Set(); render();
-  try{
-    backend = configured ? await makeFirebase(me.room) : makeDemo(me.room);
-  }catch(err){
-    console.error(err); backend=makeDemo(me.room);
-    toast('Não consegui conectar ao Firebase. Usando modo local.');
-  }
+  try{ backend = configured ? await makeFirebase(me.room) : makeDemo(me.room); }
+  catch(err){ console.error(err); backend=makeDemo(me.room); toast('Sem conexão com o Firebase. Usando modo local.'); }
   $('#demoBanner').style.display = backend.demo ? 'block':'none';
   unsub = backend.subscribe(list=>{
     if(!firstLoad){
       list.forEach(e=>{
         if(!seen.has(e.id) && e.uid!==me.uid){
-          toast(`${e.name} registrou: ${e.feeling||MOODS[e.mood].label} ${MOODS[e.mood].em}`);
-          if(navigator.vibrate) navigator.vibrate([60,40,60]);
+          toast(`${e.name}: ${e.feeling||MOODS[e.mood].label}`);
+          if(navigator.vibrate) navigator.vibrate([40,30,40]);
         }
       });
     }
     list.forEach(e=>seen.add(e.id)); firstLoad=false;
     entries=list; render();
-  }, err=>{
-    console.error(err);
-    toast('Sem permissão ou sem conexão com o Firebase. Veja o README (regras do Firestore).');
-  });
+  }, err=>{ console.error(err); toast('Sem permissão ou sem conexão. Veja as regras no README.'); });
 }
 
-/* ---------- composer ---------- */
-const orbs=$('#orbs'), chips=$('#chips');
+/* ---------- compositor ---------- */
+const moodsEl=$('#moods'), chips=$('#chips');
 Object.entries(MOODS).forEach(([k,m])=>{
-  const b=document.createElement('button'); b.className='orb'; b.style.setProperty('--c',m.color); b.dataset.k=k;
-  b.innerHTML=`<span class="em">${m.em}</span>${m.label}`;
-  b.onclick=()=>{ selMood=k; selFeel=null; drawComposer(); if(navigator.vibrate) navigator.vibrate(10); };
-  orbs.appendChild(b);
+  const b=document.createElement('button'); b.className='mood'; b.dataset.k=k; b.style.setProperty('--c',m.color);
+  b.innerHTML=`<span class="dot" style="--c:${m.color}"></span>${m.label}`;
+  b.onclick=()=>{ selMood=k; selFeel=null; drawComposer(); if(navigator.vibrate) navigator.vibrate(8); };
+  moodsEl.appendChild(b);
 });
 function drawComposer(){
-  orbs.querySelectorAll('.orb').forEach(o=>o.classList.toggle('sel',o.dataset.k===selMood));
+  moodsEl.querySelectorAll('.mood').forEach(o=>o.classList.toggle('sel',o.dataset.k===selMood));
   chips.classList.toggle('open',!!selMood);
   chips.innerHTML='';
   if(selMood) MOODS[selMood].feelings.forEach(f=>{
@@ -479,62 +458,50 @@ function drawComposer(){
 $('#btnSave').addEventListener('click',async()=>{
   if(!selMood||!backend) return;
   const btn=$('#btnSave'); btn.disabled=true;
-  const e={uid:me.uid,name:me.name,mood:selMood,feeling:selFeel||'',text:$('#txt').value.trim()};
   try{
-    await backend.add(e);
-    $('#txt').value=''; selMood=null; selFeel=null; drawComposer();
-    toast('Salvo! 💖 Ela(e) já pode ver.');
-  }catch(err){
-    console.error(err); toast('Erro ao salvar. Confira as regras do Firestore no README.'); btn.disabled=false;
-  }
+    await backend.add({uid:me.uid,name:me.name,mood:selMood,feeling:selFeel||'',text:$('#txt').value.trim()});
+    $('#txt').value=''; selMood=null; selFeel=null; drawComposer(); toast('Registro salvo');
+  }catch(err){ console.error(err); toast('Erro ao salvar. Confira as regras do Firestore.'); btn.disabled=false; }
 });
 
 /* ---------- renderização ---------- */
-function latestBy(uidFilter){ return entries.find(uidFilter); }
 function render(){
-  /* status */
-  const mine=latestBy(e=>e.uid===me.uid);
-  const other=latestBy(e=>e.uid!==me.uid);
+  const mine=entries.find(e=>e.uid===me.uid);
+  const other=entries.find(e=>e.uid!==me.uid);
   const card=(e,label,empty)=>{
     if(!e) return `<div class="scard glass empty"><div class="who"><span class="dot"></span>${esc(label)}</div><div class="feel">${empty}</div></div>`;
     const m=MOODS[e.mood]||MOODS.yellow;
-    return `<div class="scard glass" style="--c:${m.color}"><div class="who"><span class="dot"></span>${esc(e.name)}</div>
-      <div class="feel">${m.em} ${esc(e.feeling||m.label)}</div><div class="when">${fmtTime(e.createdAt)}</div></div>`;
+    return `<div class="scard glass"><div class="who">${dotHtml(e.mood)}${esc(e.name)}</div>
+      <div class="feel">${esc(e.feeling||m.label)}</div><div class="when">${fmtTime(e.createdAt)}</div></div>`;
   };
-  $('#status').innerHTML = card(mine, me.name||'Você','Sem registro') + card(other,'Seu amor','Aguardando…');
+  $('#status').innerHTML = card(mine, me.name||'Você','Sem registro') + card(other,'Seu amor','Aguardando');
 
-  /* feed */
   const feed=$('#feed');
-  if(!entries.length){ feed.innerHTML='<div class="emptymsg">Ainda não há registros.<br>Conte como você está se sentindo 💞</div>'; }
+  if(!entries.length) feed.innerHTML='<div class="emptymsg">Ainda não há registros.<br>Conte como você está se sentindo.</div>';
   else feed.innerHTML=entries.map((e,i)=>{
-    const m=MOODS[e.mood]||MOODS.yellow, mine=e.uid===me.uid;
-    return `<div class="entry glass ${mine?'me':'other'}" style="--c:${m.color};animation-delay:${Math.min(i,8)*0.05}s">
-      <div class="top"><span class="name">${esc(e.name)}</span><span class="badge">${m.em} ${esc(e.feeling||m.label)}</span><span class="time">${fmtTime(e.createdAt)}</span></div>
+    const m=MOODS[e.mood]||MOODS.yellow, mineE=e.uid===me.uid;
+    return `<div class="entry glass ${mineE?'me':'other'}" style="animation-delay:${Math.min(i,8)*0.04}s">
+      <div class="top"><span class="name">${esc(e.name)}</span><span class="badge">${dotHtml(e.mood)}${esc(e.feeling||m.label)}</span><span class="time">${fmtTime(e.createdAt)}</span></div>
       ${e.text?`<p>${esc(e.text)}</p>`:''}
-      ${mine?`<button class="del" data-id="${esc(e.id)}">apagar</button>`:''}</div>`;
+      ${mineE?`<button class="del" data-id="${esc(e.id)}">Apagar</button>`:''}</div>`;
   }).join('');
   feed.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{
     if(confirm('Apagar este registro para vocês dois?')) try{ await backend.remove(b.dataset.id) }catch(err){ toast('Não foi possível apagar.') }
   });
 
-  /* dica do momento: baseada no último humor do(a) parceiro(a), senão no seu */
   const ref = other || mine;
-  const tm = ref ? TIPS_MOOD[ref.mood] : {t:'Comece pelo diário 💞',p:'Registrem como se sentem. Quanto mais honestos vocês forem, mais fácil fica cuidar um do outro.'};
-  const col = ref ? MOODS[ref.mood].color : '#ec4899';
-  const tn=$('#tipnow'); tn.style.setProperty('--c',col);
-  tn.innerHTML=`<div class="lbl">${other?'Dica para agora, pelo humor de '+esc(other.name):'Dica do momento'}</div><h3>${tm.t}</h3><p>${tm.p}</p>`;
+  const tm = ref ? TIPS_MOOD[ref.mood] : {t:'Comece pelo diário',p:'Registrem como se sentem. Quanto mais honestos vocês forem, mais fácil fica cuidar um do outro.'};
+  $('#tipnow').innerHTML=`<div class="lbl">${other?'Agora, pelo humor de '+esc(other.name):'Dica do momento'}</div><h3>${tm.t}</h3><p>${tm.p}</p>`;
 }
 
-/* dicas */
-$('#tips').innerHTML=TIPS.map((t,i)=>`<div class="tip glass" style="animation-delay:${i*0.04}s"><div class="ic">${t.i}</div><div><h4>${t.t}</h4><p>${t.p}</p></div></div>`).join('');
+$('#tips').innerHTML=TIPS.map((t,i)=>`<div class="row" style="animation-delay:${i*0.035}s"><h4>${t.t}</h4><p>${t.p}</p></div>`).join('');
 
-/* presentes */
 let gcat='Todos';
 function drawGifts(){
   $('#gfilters').innerHTML=GCATS.map(c=>`<button class="chip${c===gcat?' sel':''}" data-c="${c}">${c}</button>`).join('');
   $('#gfilters').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{gcat=b.dataset.c;drawGifts()});
   $('#gifts').innerHTML=GIFTS.filter(g=>gcat==='Todos'||g.c===gcat).map((g,i)=>
-    `<div class="gift glass" style="animation-delay:${i*0.04}s"><div class="ic">${g.i}</div><div><h4>${g.n}</h4><p>${g.d}</p><div class="pr">${g.p}</div></div></div>`).join('');
+    `<div class="row gift" style="animation-delay:${i*0.035}s"><div class="ic">${g.i}</div><div><h4>${g.n}</h4><p>${g.d}</p><div class="pr">${g.p}</div></div></div>`).join('');
 }
 drawGifts(); drawComposer();
 
@@ -542,15 +509,13 @@ drawGifts(); drawComposer();
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(+b.dataset.t));
 function go(n){
   if(n===tab) return;
-  document.querySelectorAll('.panel').forEach((p,i)=>{
-    p.classList.toggle('active',i===n);
-    p.classList.toggle('left',i<n);
-  });
+  document.querySelectorAll('.panel').forEach((p,i)=>{ p.classList.toggle('active',i===n); p.classList.toggle('left',i<n); });
   document.querySelectorAll('nav button').forEach((b,i)=>b.classList.toggle('on',i===n));
   $('#ind').style.transform=`translateX(${n*100}%)`;
-  tab=n;
-  if(navigator.vibrate) navigator.vibrate(8);
+  tab=n; if(navigator.vibrate) navigator.vibrate(6);
 }
+
+document.addEventListener('focusin',()=>{ const m=document.querySelector('main'); if(m){ m.scrollLeft=0; } document.documentElement.scrollLeft=0; document.body.scrollLeft=0; });
 
 /* ---------- PWA ---------- */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){

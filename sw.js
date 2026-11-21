@@ -1,6 +1,6 @@
 // Service worker simples: deixa o app abrir rápido e instalável.
 // Rede primeiro (para você sempre ver a versão nova), cache como reserva.
-const CACHE = 'diario-v1';
+const CACHE = 'diario-v2';
 const SHELL = ['./', 'index.html', 'firebase-config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
